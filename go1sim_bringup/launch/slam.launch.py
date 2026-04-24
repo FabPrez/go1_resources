@@ -1,0 +1,44 @@
+import os
+from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import LaunchConfiguration
+from launch_ros.actions import Node
+from launch_ros.substitutions import FindPackageShare
+from ament_index_python.packages import get_package_share_directory
+
+
+def generate_launch_description():
+
+    pkg = get_package_share_directory('go1sim_bringup')
+    nav2_dir = FindPackageShare('nav2_bringup').find('nav2_bringup')
+
+    slam_params = os.path.join(pkg, 'params', 'slam_params.yaml')
+    nav2_params = os.path.join(pkg, 'params', 'nav2_params.yaml')
+
+    use_sim_time = LaunchConfiguration('use_sim_time')
+    autostart = LaunchConfiguration('autostart')
+
+    return LaunchDescription([
+        DeclareLaunchArgument('use_sim_time', default_value='True'),
+        DeclareLaunchArgument('autostart', default_value='true'),
+
+        # slam_toolbox: builds map + localizes simultaneously
+        # publishes /map and map->odom TF (no map_server/AMCL needed)
+        Node(
+            package='slam_toolbox',
+            executable='async_slam_toolbox_node',
+            name='slam_toolbox',
+            output='screen',
+            parameters=[slam_params, {'use_sim_time': use_sim_time}]),
+
+        # Nav2 navigation stack only (no localization — slam_toolbox handles it)
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                os.path.join(nav2_dir, 'launch', 'navigation_launch.py')),
+            launch_arguments={
+                'use_sim_time': use_sim_time,
+                'autostart': autostart,
+                'params_file': nav2_params,
+            }.items()),
+    ])
