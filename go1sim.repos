@@ -1,0 +1,10 @@
+repositories:
+  unitree_ros2_sim:
+    type: git
+    url: https://github.com/Atharva-05/unitree_ros2_sim.git
+    version: main
+
+  go1_resources:
+    type: git
+    url: https://github.com/FabPrez/go1_resources.git
+    version: main
