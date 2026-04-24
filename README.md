@@ -49,48 +49,51 @@ source install/setup.bash
 
 ## Launchers
 
-All launchers are in the `go1sim_bringup` package.
-The locomotion controller (`junior_ctrl`) must always be started separately
-because it requires interactive keyboard input.
+Each concern is launched separately in its own terminal. The three groups are:
 
-### go1sim_bringup
+| Group | Command | Description |
+|---|---|---|
+| **Simulation** | `ros2 launch go1sim_bringup simulation.launch.py` | Gazebo world + robot spawn + RViz |
+| **Controller** | `ros2 run unitree_guide2 junior_ctrl` | Locomotion controller (requires keyboard input) |
+| **Nav2 — map** | `ros2 launch go1sim_bringup navigation.launch.py` | Nav2 with pre-built map (AMCL localization) |
+| **Nav2 — SLAM** | `ros2 launch go1sim_bringup slam.launch.py` | slam_toolbox + Nav2 (builds map on the fly) |
 
-| Command | Description |
-|---|---|
-| `ros2 launch go1sim_bringup simulation.launch.py` | Gazebo + RViz only (no Nav2) |
-| `ros2 launch go1sim_bringup navigation.launch.py` | Nav2 with pre-built map (run after simulation) |
-| `ros2 launch go1sim_bringup slam.launch.py` | SLAM + Nav2 (run after simulation) |
-| `ros2 launch go1sim_bringup bringup.launch.py` | All-in-one: simulation + Nav2 |
-| `ros2 launch go1sim_bringup bringup_slam.launch.py` | All-in-one: simulation + SLAM |
+> **Note:** `junior_ctrl` always runs in its own terminal because it requires interactive keyboard input (`2` → stand up, `5` → MOVE_BASE mode).
 
-### Locomotion controller (always in a separate terminal)
+---
+
+## Typical workflow — navigation with pre-built map
 
 ```bash
+# Terminal 1 — simulation
+ros2 launch go1sim_bringup simulation.launch.py
+
+# Terminal 2 — locomotion controller
 ros2 run unitree_guide2 junior_ctrl
 # press 2 → stand up
 # press 5 → MOVE_BASE mode (accepts /cmd_vel from Nav2)
-```
 
-### Typical workflow — navigation with pre-built map
-
-```bash
-# Terminal 1
-ros2 launch go1sim_bringup bringup.launch.py
-
-# Terminal 2
-ros2 run unitree_guide2 junior_ctrl   # press 2, then 5
+# Terminal 3 — Nav2 stack (after the robot is standing)
+ros2 launch go1sim_bringup navigation.launch.py
 ```
 
 Then use **2D Goal Pose** in RViz to send navigation goals.
 
-### Typical workflow — SLAM (build map while exploring)
+---
+
+## Typical workflow — SLAM (build map while exploring)
 
 ```bash
-# Terminal 1
-ros2 launch go1sim_bringup bringup_slam.launch.py
+# Terminal 1 — simulation
+ros2 launch go1sim_bringup simulation.launch.py
 
-# Terminal 2
-ros2 run unitree_guide2 junior_ctrl   # press 2, then 5
+# Terminal 2 — locomotion controller
+ros2 run unitree_guide2 junior_ctrl
+# press 2 → stand up
+# press 5 → MOVE_BASE mode (accepts /cmd_vel from Nav2)
+
+# Terminal 3 — SLAM + Nav2 (after the robot is standing)
+ros2 launch go1sim_bringup slam.launch.py
 ```
 
 Drive the robot around with Nav2 goals or teleop. Save the map when done:
