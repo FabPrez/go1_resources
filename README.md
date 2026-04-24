@@ -17,25 +17,25 @@ ROS2 packages for Unitree Go1 simulation and deployment, built on top of
 - [vcstool](https://github.com/dirk-thomas/vcstool): `pip install vcstool`
 - Gazebo 11
 - Nav2, slam_toolbox: `sudo apt install ros-humble-navigation2 ros-humble-nav2-bringup ros-humble-slam-toolbox`
+- lcm (Needs to be built from source)
 
 ### Setup workspace
 
 ```bash
 mkdir -p ~/go1_ws/src
-cd ~/go1_ws
+cd ~/go1_ws/src
 
-# Import all repositories (unitree_ros2_sim + go1_resources)
-vcs import src < src/go1_resources/go1sim.repos
+git clone https://github.com/FabPrez/go1_resources.git
+sudo apt update
+sudo apt dist-upgrade
+rosdep update
+vcs import src < go1_resources/go1sim.repos
+cd ..
+rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y
+
+
 ```
 
-> **Note:** `go1sim.repos` is inside `go1_resources/`, which must already be cloned.
-> Bootstrap with:
-> ```bash
-> cd ~/go1_ws/src
-> git clone https://github.com/FabPrez/go1_resources.git
-> cd ..
-> vcs import src < src/go1_resources/go1sim.repos
-> ```
 
 ### Build
 
