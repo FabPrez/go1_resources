@@ -22,8 +22,8 @@ ROS2 packages for Unitree Go1 simulation and deployment, built on top of
 ### Setup workspace
 
 ```bash
-mkdir -p ~/go1_ws/src
-cd ~/go1_ws/src
+mkdir -p /go1_ws/src
+cd /go1_ws/src
 
 git clone https://github.com/FabPrez/go1_resources.git
 sudo apt update
@@ -40,7 +40,7 @@ rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y
 ### Build
 
 ```bash
-cd ~/go1_ws
+cd /go1_ws
 colcon build
 source install/setup.bash
 ```
