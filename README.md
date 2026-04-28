@@ -41,7 +41,7 @@ rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y
 
 ```bash
 cd /go1_ws
-colcon build
+colcon build --symlink-install   --parallel-workers 2   --cmake-args -DCMAKE_BUILD_PARALLEL_LEVEL=2
 source install/setup.bash
 ```
 
