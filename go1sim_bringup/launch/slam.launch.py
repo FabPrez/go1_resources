@@ -15,6 +15,7 @@ def generate_launch_description():
 
     slam_params = os.path.join(pkg, 'params', 'slam_params.yaml')
     nav2_params = os.path.join(pkg, 'params', 'nav2_params.yaml')
+    bt_xml = os.path.join(pkg, 'xml', 'go1_bt.xml')
 
     use_sim_time = LaunchConfiguration('use_sim_time')
     autostart = LaunchConfiguration('autostart')
@@ -40,5 +41,7 @@ def generate_launch_description():
                 'use_sim_time': use_sim_time,
                 'autostart': autostart,
                 'params_file': nav2_params,
+                'default_nav_to_pose_bt_xml': bt_xml,
+                'default_nav_through_poses_bt_xml': bt_xml,
             }.items()),
     ])

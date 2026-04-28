@@ -15,9 +15,7 @@ def generate_launch_description():
 
     map_yaml = os.path.join(pkg, 'map', 'map.yaml')
     nav2_params = os.path.join(pkg, 'params', 'nav2_params.yaml')
-    nav2_bt_path = FindPackageShare('nav2_bt_navigator').find('nav2_bt_navigator')
-    bt_xml = os.path.join(nav2_bt_path, 'behavior_trees',
-                          'navigate_w_replanning_and_recovery.xml')
+    bt_xml = os.path.join(pkg, 'xml', 'go1_bt.xml')
 
     use_sim_time = LaunchConfiguration('use_sim_time')
     autostart = LaunchConfiguration('autostart')
@@ -34,7 +32,8 @@ def generate_launch_description():
                 'map': map_yaml,
                 'use_sim_time': use_sim_time,
                 'params_file': nav2_params,
-                'default_bt_xml_filename': bt_xml,
+                'default_nav_to_pose_bt_xml': bt_xml,
+                'default_nav_through_poses_bt_xml': bt_xml,
                 'autostart': autostart,
             }.items()),
     ])
