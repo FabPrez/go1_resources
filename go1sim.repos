@@ -3,3 +3,7 @@ repositories:
     type: git
     url: https://github.com/Atharva-05/unitree_ros2_sim.git
     version: main
+  m-explore-ros2:
+    type: git
+    url: https://github.com/robo-friends/m-explore-ros2.git
+    version: humble

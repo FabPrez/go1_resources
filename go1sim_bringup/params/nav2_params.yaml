@@ -235,11 +235,21 @@ planner_server:
     expected_planner_frequency: 20.0
     use_sim_time: True
     planner_plugins: ["GridBased"]
+    # planner_plugins: ["GridBased", "Coverage"]  # uncomment when opennav_coverage is built
     GridBased:
       plugin: "nav2_navfn_planner/NavfnPlanner"
       tolerance: 0.5
       use_astar: false
       allow_unknown: true
+    # Coverage:
+    #   plugin: "opennav_coverage/CoverageServer"
+    #   robot_width: 0.36
+    #   operation_width: 0.36
+    #   min_turning_radius: 0.25
+    #   linear_curving_penalty: 2.0
+    #   curved_penalty: 1.0
+    #   reverse_penalty: 5.0
+    #   allow_unknown: true
 
 smoother_server:
   ros__parameters:
@@ -352,7 +362,7 @@ amcl:
     scan_topic: scan
     set_initial_pose: true
     initial_pose:
-      x: 0.0
-      y: 0.0
+      x: 2.89
+      y: -1.44
       z: 0.0
       yaw: 0.0
