@@ -8,7 +8,6 @@ Panels:
         - /Status1
         - /Grid1
         - /RobotModel1
-        - /ParticleCloud1/Status1
         - /ParticleCloud1/Topic1
       Splitter Ratio: 0.5
     Tree Height: 1175
@@ -128,60 +127,59 @@ Visualization Manager:
       Show Names: false
       Tree:
         map:
-          {}
-        odom:
-          base_link:
-            base_footprint:
-              {}
-            trunk:
-              FL_hip:
-                FL_thigh:
-                  FL_calf:
-                    FL_foot:
+          odom:
+            base_link:
+              base_footprint:
+                {}
+              trunk:
+                FL_hip:
+                  FL_thigh:
+                    FL_calf:
+                      FL_foot:
+                        {}
+                    FL_calf_rotor:
                       {}
-                  FL_calf_rotor:
+                  FL_thigh_rotor:
                     {}
-                FL_thigh_rotor:
+                FL_hip_rotor:
                   {}
-              FL_hip_rotor:
-                {}
-              FR_hip:
-                FR_thigh:
-                  FR_calf:
-                    FR_foot:
+                FR_hip:
+                  FR_thigh:
+                    FR_calf:
+                      FR_foot:
+                        {}
+                    FR_calf_rotor:
                       {}
-                  FR_calf_rotor:
+                  FR_thigh_rotor:
                     {}
-                FR_thigh_rotor:
+                FR_hip_rotor:
                   {}
-              FR_hip_rotor:
-                {}
-              RL_hip:
-                RL_thigh:
-                  RL_calf:
-                    RL_foot:
+                RL_hip:
+                  RL_thigh:
+                    RL_calf:
+                      RL_foot:
+                        {}
+                    RL_calf_rotor:
                       {}
-                  RL_calf_rotor:
+                  RL_thigh_rotor:
                     {}
-                RL_thigh_rotor:
+                RL_hip_rotor:
                   {}
-              RL_hip_rotor:
-                {}
-              RR_hip:
-                RR_thigh:
-                  RR_calf:
-                    RR_foot:
+                RR_hip:
+                  RR_thigh:
+                    RR_calf:
+                      RR_foot:
+                        {}
+                    RR_calf_rotor:
                       {}
-                  RR_calf_rotor:
+                  RR_thigh_rotor:
                     {}
-                RR_thigh_rotor:
+                RR_hip_rotor:
                   {}
-              RR_hip_rotor:
-                {}
-              imu_link:
-                {}
-              laser_link:
-                {}
+                imu_link:
+                  {}
+                laser_link:
+                  {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -409,7 +407,7 @@ Visualization Manager:
       Color Scheme: map
       Draw Behind: false
       Enabled: true
-      Name: Map
+      Name: Map Global
       Topic:
         Depth: 5
         Durability Policy: Volatile
@@ -428,7 +426,7 @@ Visualization Manager:
     - Alpha: 1
       Buffer Length: 1
       Class: rviz_default_plugins/Path
-      Color: 25; 255; 0
+      Color: 0; 0; 255
       Enabled: true
       Head Diameter: 0.30000001192092896
       Head Length: 0.20000000298023224
@@ -486,7 +484,7 @@ Visualization Manager:
       Color Scheme: map
       Draw Behind: false
       Enabled: true
-      Name: Map
+      Name: Map Local
       Topic:
         Depth: 5
         Durability Policy: Volatile
@@ -585,7 +583,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 8.550680160522461
+      Distance: 12.013091087341309
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -600,10 +598,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.09039696305990219
+      Pitch: 0.6503967642784119
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.8880960941314697
+      Yaw: 4.358099460601807
     Saved:
       - Class: rviz_default_plugins/Orbit
         Distance: 1.3840727806091309
