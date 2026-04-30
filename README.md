@@ -54,13 +54,31 @@ Each concern is launched separately in its own terminal. The three groups are:
 
 | Group | Command | Description |
 |---|---|---|
-| **Simulation** | `ros2 launch go1sim_bringup simulation.launch.py` | Gazebo world + robot spawn + RViz |
+| **Simulation (Simple)** | `ros2 launch go1sim_bringup simulation.launch.py` | Gazebo empty world + robot spawn + RViz |
+| **Simulation (Multi-Room)** | `ros2 launch go1sim_bringup simulation_multi_room.launch.py` | Gazebo multi-room world + robot spawn + RViz |
 | **Controller** | `ros2 run unitree_guide2 junior_ctrl` | Locomotion controller (requires keyboard input) |
 | **Nav2 — map** | `ros2 launch go1sim_bringup navigation.launch.py` | Nav2 with pre-built map (AMCL localization) |
 | **Nav2 — SLAM** | `ros2 launch go1sim_bringup slam.launch.py` | slam_toolbox + Nav2 (builds map on the fly) |
 | **Autonomous exploration** | `ros2 launch explore_lite explore.launch.py` | Frontier-based autonomous SLAM (requires SLAM running) |
 
 > **Note:** `junior_ctrl` always runs in its own terminal because it requires interactive keyboard input (`2` → stand up, `5` → MOVE_BASE mode).
+
+---
+
+## Simulation Environments
+
+Before running any navigation or SLAM workflow, you must start the simulation. You can choose between two different environments:
+
+1. **Simple World:** An open, simple environment.
+   ```bash
+   ros2 launch go1sim_bringup simulation.launch.py
+   ```
+2. **Multi-Room World:** A complex environment with multiple rooms and corridors, ideal for testing exploration and SLAM.
+   ```bash
+   ros2 launch go1sim_bringup simulation_multi_room.launch.py
+   ```
+
+*Note: In the workflows below, you can substitute `simulation.launch.py` with `simulation_multi_room.launch.py` depending on the environment you want to test.*
 
 ---
 

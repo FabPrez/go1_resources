@@ -1,0 +1,445 @@
+<?xml version="1.0" ?>
+<sdf version="1.7">
+  <world name="multi_room_world">
+
+    <light name="sun" type="directional">
+      <cast_shadows>1</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <!-- ── ASPHALT FLOOR ─────────────────────────────────────────────────── -->
+    <model name="ground_plane">
+      <static>1</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane><normal>0 0 1</normal><size>100 100</size></plane>
+          </geometry>
+          <surface>
+            <friction><ode><mu>100</mu><mu2>50</mu2></ode></friction>
+          </surface>
+        </collision>
+        <visual name="visual">
+          <cast_shadows>0</cast_shadows>
+          <geometry>
+            <plane><normal>0 0 1</normal><size>100 100</size></plane>
+          </geometry>
+          <!-- dark asphalt look -->
+          <material>
+            <ambient>0.12 0.12 0.12 1</ambient>
+            <diffuse>0.18 0.18 0.18 1</diffuse>
+            <specular>0.01 0.01 0.01 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <gravity>0 0 -9.8</gravity>
+    <physics type="ode">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
+    <scene>
+      <ambient>0.45 0.45 0.45 1</ambient>
+      <background>0.55 0.55 0.55 1</background>
+      <shadows>1</shadows>
+    </scene>
+
+    <!--
+      LAYOUT  (origin at world centre, all coords in metres)
+      ─────────────────────────────────────────────────────
+      Outer boundary  : 50 m wide (x: -25 … +25)  ×  16 m tall (y: -8 … +8)
+      Wall height     : 2.5 m,  thickness : 0.15 m
+
+      UPPER corridor  : y = 2 … 8   (full width, freely navigable)
+      LOWER zone      : y = -8 … 2
+        ├─ Spawn room  : x = -25 … -10,  y = -8 … 2  (15 m × 10 m)
+        └─ Main area   : x = -10 … +25,  y = -8 … 2
+
+      INNER WALLS
+        • Horizontal separator y=2, x=-25…+25
+            Door 1  x = -19 … -17  (above spawn room)
+            Door 2  x =  -3 …  -1  (above main area)
+        • Vertical separator   x=-10, y=-8…+2  (complete)
+        • Right partial wall   x=+20, y=-8…+2
+            Door 3  y = -4 … -2
+
+      Robot spawns at (-18, -4, 0.6).
+    -->
+
+    <model name="environment">
+      <static>1</static>
+      <pose>0 0 0 0 0 0</pose>
+
+      <!-- ── OUTER WALLS ──────────────────────────────────────────────────── -->
+
+      <link name="north_wall">
+        <pose>0 8 1.25 0 0 0</pose>
+        <collision name="col"><geometry><box><size>50.3 0.15 2.5</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>50.3 0.15 2.5</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/White</name></script></material>
+        </visual>
+      </link>
+
+      <link name="south_wall">
+        <pose>0 -8 1.25 0 0 0</pose>
+        <collision name="col"><geometry><box><size>50.3 0.15 2.5</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>50.3 0.15 2.5</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/White</name></script></material>
+        </visual>
+      </link>
+
+      <!-- ── INNER WALL x=-25  (now separates spawn room below from left room above)
+             Door gap at y=4.7…5.3 (0.6 m, aligned with yellow corridor at y=5) ── -->
+
+      <!-- Segment A : y=-8…4.7  (12.7 m, spawn-room left wall + lower divider) -->
+      <link name="west_wall_A">
+        <!-- centre y = (-8+4.7)/2 = -1.65 -->
+        <pose>-25 -1.65 1.25 0 0 0</pose>
+        <collision name="col"><geometry><box><size>0.15 12.7 2.5</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.15 12.7 2.5</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/White</name></script></material>
+        </visual>
+      </link>
+
+      <!-- Segment B : y=5.3…8  (2.7 m, above door) -->
+      <link name="west_wall_B">
+        <!-- centre y = (5.3+8)/2 = 6.65 -->
+        <pose>-25 6.65 1.25 0 0 0</pose>
+        <collision name="col"><geometry><box><size>0.15 2.7 2.5</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.15 2.7 2.5</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/White</name></script></material>
+        </visual>
+      </link>
+
+      <!-- Door pillars at x=-25 (south and north edge of the 0.6 m gap) -->
+      <link name="left_room_door_pillar_S">
+        <pose>-25 4.7 1.25 0 0 0</pose>
+        <collision name="col"><geometry><box><size>0.3 0.3 2.5</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.3 0.3 2.5</size></box></geometry>
+          <material><ambient>0.25 0.25 0.25 1</ambient><diffuse>0.30 0.30 0.30 1</diffuse></material></visual>
+      </link>
+
+      <link name="left_room_door_pillar_N">
+        <pose>-25 5.3 1.25 0 0 0</pose>
+        <collision name="col"><geometry><box><size>0.3 0.3 2.5</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.3 0.3 2.5</size></box></geometry>
+          <material><ambient>0.25 0.25 0.25 1</ambient><diffuse>0.30 0.30 0.30 1</diffuse></material></visual>
+      </link>
+
+      <!-- ── NEW LEFT ROOM  x=-40…-25, y=2…8  (15 m × 6 m) ──────────────────── -->
+
+      <!-- North wall extension : y=8, x=-40…-25 (15 m) -->
+      <link name="left_room_north_wall">
+        <pose>-32.5 8 1.25 0 0 0</pose>
+        <collision name="col"><geometry><box><size>15.15 0.15 2.5</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>15.15 0.15 2.5</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/White</name></script></material>
+        </visual>
+      </link>
+
+      <!-- West wall of new room : x=-40, y=2…8 (6 m) -->
+      <link name="left_room_west_wall">
+        <!-- centre y = (2+8)/2 = 5 -->
+        <pose>-40 5 1.25 0 0 0</pose>
+        <collision name="col"><geometry><box><size>0.15 6.15 2.5</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.15 6.15 2.5</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/White</name></script></material>
+        </visual>
+      </link>
+
+      <!-- South wall of new room : y=2, x=-40…-25 (15 m) -->
+      <link name="left_room_south_wall">
+        <pose>-32.5 2 1.25 0 0 0</pose>
+        <collision name="col"><geometry><box><size>15.15 0.15 2.5</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>15.15 0.15 2.5</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/White</name></script></material>
+        </visual>
+      </link>
+
+      <link name="east_wall">
+        <pose>25 0 1.25 0 0 0</pose>
+        <collision name="col"><geometry><box><size>0.15 16.3 2.5</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.15 16.3 2.5</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/White</name></script></material>
+        </visual>
+      </link>
+
+      <!-- ── VERTICAL SEPARATOR x=-10  (spawn room right wall, y=-8…2, full) ── -->
+
+      <link name="spawn_room_right_wall">
+        <pose>-10 -3 1.25 0 0 0</pose>
+        <collision name="col"><geometry><box><size>0.15 10.15 2.5</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.15 10.15 2.5</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/White</name></script></material>
+        </visual>
+      </link>
+
+      <!-- ── HORIZONTAL SEPARATOR y=2  (two gaps = doors 1 & 2) ───────────── -->
+
+      <!-- Segment A : x = -25 … -19  (6 m, left of door 1) -->
+      <link name="horiz_wall_A">
+        <pose>-22 2 1.25 0 0 0</pose>
+        <collision name="col"><geometry><box><size>6.15 0.15 2.5</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>6.15 0.15 2.5</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/White</name></script></material>
+        </visual>
+      </link>
+
+      <!-- Door 1 gap : x = -19 … -17  (2 m) ← door frame pillars below -->
+
+      <!-- Segment B : x = -17 … -3  (14 m, between doors 1 & 2) -->
+      <link name="horiz_wall_B">
+        <pose>-10 2 1.25 0 0 0</pose>
+        <collision name="col"><geometry><box><size>14 0.15 2.5</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>14 0.15 2.5</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/White</name></script></material>
+        </visual>
+      </link>
+
+      <!-- Door 2 gap : x = -3 … -1  (2 m) ← door frame pillars below -->
+
+      <!-- Segment C : x = -1 … +25  (26 m, right of door 2) -->
+      <link name="horiz_wall_C">
+        <pose>12 2 1.25 0 0 0</pose>
+        <collision name="col"><geometry><box><size>26 0.15 2.5</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>26 0.15 2.5</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/White</name></script></material>
+        </visual>
+      </link>
+
+      <!-- ── RIGHT PARTIAL WALL x=+20  (y=-8…+2, gap at y=-4…-2 = door 3) ── -->
+      <!--   FIX: extended to y=+2 so it joins the horizontal separator.       -->
+
+      <!-- Segment A : y = -8 … -4  (4 m, below door 3) -->
+      <link name="right_partial_wall_A">
+        <pose>20 -6 1.25 0 0 0</pose>
+        <collision name="col"><geometry><box><size>0.15 4 2.5</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.15 4 2.5</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/White</name></script></material>
+        </visual>
+      </link>
+
+      <!-- Door 3 gap : y = -4 … -2  (2 m) ← door frame pillars below -->
+
+      <!-- Segment B : y = -2 … +2  (4 m, above door 3 — connects to horiz separator) -->
+      <link name="right_partial_wall_B">
+        <!-- y centre = (-2 + 2)/2 = 0,  length = 4 m -->
+        <pose>20 0 1.25 0 0 0</pose>
+        <collision name="col"><geometry><box><size>0.15 4.15 2.5</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.15 4.15 2.5</size></box></geometry>
+          <material><script><uri>file://media/materials/scripts/gazebo.material</uri><name>Gazebo/White</name></script></material>
+        </visual>
+      </link>
+
+      <!-- ── DOOR FRAME PILLARS (dark grey, 0.3 × 0.3 × 2.5 m) ────────────── -->
+      <!--   One pillar at each edge of every door gap.                         -->
+      <!--   Pillars are flush with the wall face (y=2 or x=20).                -->
+
+      <!-- Door 1 left pillar  : x=-19, y=2 -->
+      <link name="door1_pillar_left">
+        <pose>-19 2 1.25 0 0 0</pose>
+        <collision name="col"><geometry><box><size>0.3 0.3 2.5</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.3 0.3 2.5</size></box></geometry>
+          <material>
+            <ambient>0.25 0.25 0.25 1</ambient>
+            <diffuse>0.30 0.30 0.30 1</diffuse>
+          </material>
+        </visual>
+      </link>
+
+      <!-- Door 1 right pillar : x=-17, y=2 -->
+      <link name="door1_pillar_right">
+        <pose>-17 2 1.25 0 0 0</pose>
+        <collision name="col"><geometry><box><size>0.3 0.3 2.5</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.3 0.3 2.5</size></box></geometry>
+          <material>
+            <ambient>0.25 0.25 0.25 1</ambient>
+            <diffuse>0.30 0.30 0.30 1</diffuse>
+          </material>
+        </visual>
+      </link>
+
+      <!-- Door 2 left pillar  : x=-3, y=2 -->
+      <link name="door2_pillar_left">
+        <pose>-3 2 1.25 0 0 0</pose>
+        <collision name="col"><geometry><box><size>0.3 0.3 2.5</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.3 0.3 2.5</size></box></geometry>
+          <material>
+            <ambient>0.25 0.25 0.25 1</ambient>
+            <diffuse>0.30 0.30 0.30 1</diffuse>
+          </material>
+        </visual>
+      </link>
+
+      <!-- Door 2 right pillar : x=-1, y=2 -->
+      <link name="door2_pillar_right">
+        <pose>-1 2 1.25 0 0 0</pose>
+        <collision name="col"><geometry><box><size>0.3 0.3 2.5</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.3 0.3 2.5</size></box></geometry>
+          <material>
+            <ambient>0.25 0.25 0.25 1</ambient>
+            <diffuse>0.30 0.30 0.30 1</diffuse>
+          </material>
+        </visual>
+      </link>
+
+      <!-- Door 3 bottom pillar : x=20, y=-4 -->
+      <link name="door3_pillar_bottom">
+        <pose>20 -4 1.25 0 0 0</pose>
+        <collision name="col"><geometry><box><size>0.3 0.3 2.5</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.3 0.3 2.5</size></box></geometry>
+          <material>
+            <ambient>0.25 0.25 0.25 1</ambient>
+            <diffuse>0.30 0.30 0.30 1</diffuse>
+          </material>
+        </visual>
+      </link>
+
+      <!-- Door 3 top pillar    : x=20, y=-2 -->
+      <link name="door3_pillar_top">
+        <pose>20 -2 1.25 0 0 0</pose>
+        <collision name="col"><geometry><box><size>0.3 0.3 2.5</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.3 0.3 2.5</size></box></geometry>
+          <material>
+            <ambient>0.25 0.25 0.25 1</ambient>
+            <diffuse>0.30 0.30 0.30 1</diffuse>
+          </material>
+        </visual>
+      </link>
+
+    </model>
+
+    <!-- ── FLOOR SAFETY CORRIDORS (visual only, no collision, z=0.01 m tall) ──
+         Yellow painted stripes on the asphalt:
+           • Upper corridor  : horizontal, y=5, from x=-23.5 to +23.5
+                               1.5 m from north wall (y=8) and separator (y=2)
+           • Lower main area : horizontal, y=-3, from x=-8.5 to +23.5
+                               1.5 m from separator wall (x=-10) and east wall (x=25)
+         Both corridors are 0.6 m wide (at least 60 cm as required).
+    -->
+
+    <!-- ── Helper macro: yellow floor tile ──────────────────────────────────
+         Used inline below — each model is a static flat yellow box.
+         sx/sy = size in x/y (metres). Pose set per-model.
+    -->
+
+    <!-- HORIZONTAL corridor – upper (y=5, x=-23.5…+23.5, 47 m × 0.6 m) -->
+    <model name="floor_upper_horiz">
+      <static>1</static>
+      <pose>0 5 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><box><size>47 0.6 0.01</size></box></geometry>
+          <material>
+            <ambient>1.0 0.85 0.0 1</ambient><diffuse>1.0 0.85 0.0 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- HORIZONTAL corridor – lower (y=-3, x=-8.5…+23.5, 32 m × 0.6 m) -->
+    <model name="floor_lower_horiz">
+      <static>1</static>
+      <!-- centre x = (-8.5+23.5)/2 = 7.5 -->
+      <pose>7.5 -3 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><box><size>32 0.6 0.01</size></box></geometry>
+          <material>
+            <ambient>1.0 0.85 0.0 1</ambient><diffuse>1.0 0.85 0.0 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- VERTICAL connector – Door 1, upper side (x=-18, y=2.075…4.7)
+         Joins the upper corridor (bottom edge y=4.7) to the wall top (y=2.075).
+         Length = 4.7-2.075 = 2.625 m,  centre y = (4.7+2.075)/2 = 3.39 -->
+    <model name="floor_connector_door1_up">
+      <static>1</static>
+      <pose>-18 3.39 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><box><size>0.6 2.625 0.01</size></box></geometry>
+          <material>
+            <ambient>1.0 0.85 0.0 1</ambient><diffuse>1.0 0.85 0.0 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- VERTICAL connector – Door 2, upper side (x=-2, y=2.075…4.7)
+         Same geometry as door-1 connector, different x. -->
+    <model name="floor_connector_door2_up">
+      <static>1</static>
+      <pose>-2 3.39 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><box><size>0.6 2.625 0.01</size></box></geometry>
+          <material>
+            <ambient>1.0 0.85 0.0 1</ambient><diffuse>1.0 0.85 0.0 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- VERTICAL connector – Door 2, lower side (x=-2, y=-2.7…1.925)
+         Joins wall bottom (y=1.925) to lower corridor top edge (y=-2.7).
+         Length = 1.925-(-2.7) = 4.625 m,  centre y = (1.925+(-2.7))/2 = -0.39 -->
+    <model name="floor_connector_door2_down">
+      <static>1</static>
+      <pose>-2 -0.39 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><box><size>0.6 4.625 0.01</size></box></geometry>
+          <material>
+            <ambient>1.0 0.85 0.0 1</ambient><diffuse>1.0 0.85 0.0 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- top-down camera view centred on the environment -->
+    <gui fullscreen="0">
+      <camera name="user_camera">
+        <pose>0 -3 45 0 1.2 1.57</pose>
+        <view_controller>orbit</view_controller>
+        <projection_type>perspective</projection_type>
+      </camera>
+    </gui>
+
+  </world>
+</sdf>
