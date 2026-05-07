@@ -50,12 +50,16 @@ source install/setup.bash
 
 ## Launchers
 
-Each concern is launched separately in its own terminal. The three groups are:
+Each concern is launched separately in its own terminal. The launchers are split into two parts:
+
+1. choose one simulation environment;
+2. run the robot controller and one navigation/SLAM workflow on top of it.
 
 | Group | Command | Description |
 |---|---|---|
 | **Simulation (Simple)** | `ros2 launch go1sim_bringup simulation.launch.py` | Gazebo empty world + robot spawn + RViz |
 | **Simulation (Multi-Room)** | `ros2 launch go1sim_bringup simulation_multi_room.launch.py` | Gazebo multi-room world + robot spawn + RViz |
+| **Simulation (Rubattino)** | `ros2 launch go1sim_bringup simulation_rubattino.launch.py` | Gazebo Rubattino 3D world + robot spawn + RViz |
 | **Controller** | `ros2 run unitree_guide2 junior_ctrl` | Locomotion controller (requires keyboard input) |
 | **Nav2 — map** | `ros2 launch go1sim_bringup navigation.launch.py` | Nav2 with pre-built map (AMCL localization) |
 | **Nav2 — SLAM** | `ros2 launch go1sim_bringup slam.launch.py` | slam_toolbox + Nav2 (builds map on the fly) |
@@ -67,7 +71,7 @@ Each concern is launched separately in its own terminal. The three groups are:
 
 ## Simulation Environments
 
-Before running any navigation or SLAM workflow, you must start the simulation. You can choose between two different environments:
+Before running navigation, SLAM, or autonomous SLAM, you must start exactly one simulation environment. The navigation/SLAM launchers are independent from the environment: choose the world you want to test, then run the workflow you need in the next terminals.
 
 1. **Simple World:** An open, simple environment.
    ```bash
@@ -77,8 +81,12 @@ Before running any navigation or SLAM workflow, you must start the simulation. Y
    ```bash
    ros2 launch go1sim_bringup simulation_multi_room.launch.py
    ```
+3. **Rubattino World:** The Rubattino 3D environment for testing in a realistic mapped space.
+   ```bash
+   ros2 launch go1sim_bringup simulation_rubattino.launch.py
+   ```
 
-*Note: In the workflows below, you can substitute `simulation.launch.py` with `simulation_multi_room.launch.py` depending on the environment you want to test.*
+*Note: In the workflows below, replace the Terminal 1 simulation command with any of the three environments above.*
 
 ---
 
